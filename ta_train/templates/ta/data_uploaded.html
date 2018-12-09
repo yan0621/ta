@@ -1,0 +1,14 @@
+<!doctype html>
+<head>
+  <title>Uploaded Data</title>
+</head>
+<body>
+  <table>
+    <thead></thead>
+    <tbody>
+      {% for line in content %}
+      <tr><td>{{ line }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>

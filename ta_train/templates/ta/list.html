@@ -1,0 +1,28 @@
+<!doctype html>
+<head>
+  <title>Variety List</title>
+</head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <td>Type</td>
+        <td>Exchange</td>
+        <td>Name</td>
+        <td>Code</td>
+        <td>Action</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in variety_list %}
+      <tr>
+        <td>{{ v.type }}</td>
+        <td>{{ v.exchange }}</td>
+        <td>{{ v.name }}</td>
+        <td>{{ v.code }}</td>
+        <td><a href="">Show</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>

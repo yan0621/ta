@@ -1,0 +1,22 @@
+<!doctype html>
+<head>
+  <title>Upload Data</title>
+</head>
+<body>
+  <h1>Upload New File</h1>
+  <form method="post" enctype="multipart/form-data">
+    Exchange: <br/>
+    <input type="radio" name="exchange" value="SH">SH
+    <input type="radio" name="exchange" value="SZ">SZ
+    <input type="radio" name="exchange" value="HK">HK
+    <br/>
+    Code: <br/>
+    <input type="text" name="code" />
+    <br/>
+    <input type="file" name="file" />
+    <input type="submit" value="Upload" />
+  </form>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+</body>
