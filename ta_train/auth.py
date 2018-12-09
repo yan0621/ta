@@ -24,7 +24,6 @@ def register():
   if request.method == 'POST':
     username = request.form['username']
     password = request.form['password']
-    error = None
     db = get_db()
 
     error = validate(username, password)
