@@ -11,22 +11,18 @@ app = current_app
 
 def import_variety_line(db, vline):
   tokens = vline.split(',')
-  sql = 'select id from Variety where type = "%s" and exchange = "%s" and name = "%s" and code="%s"'
-  db_cursor = db.cursor()
-  db_cursor.execute(sql, (tokens[0], tokens[1], tokens[2], tokens[3]))
-  data_id = db_cursor.fetchone()
+  sql = 'select id from Variety where type = "%s" and exchange = "%s" and name = "%s" and code="%s"' % (tokens[0], tokens[1], tokens[2], tokens[3])
+  data_id = db.execute_and_fetch(sql)[0]
   if data_id:
     app.logger.warn('conflict variety record: %s', tokens)
     return False
   else:
-    sql = 'insert into Variety (type, exchange, name, code) values (%s, %s, %s, %s)'
-    db_cursor.execute(sql, (tokens[0], tokens[1], tokens[2], tokens[3]))
-    db.commit()
+    sql = 'insert into Variety (type, exchange, name, code) values (%s, %s, %s, %s)' % (tokens[0], tokens[1], tokens[2], tokens[3])
+    db.execute(sql)
     return True
 
 
 def import_variety(db, filename):
-  cursor = db.cursor()
   try:
     count = 0
     with open(filename) as f:
@@ -52,18 +48,16 @@ def c2int(price_str):
 
 
 def import_data(db, filename):
-  cursor = db.cursor()
   tokens = re.split(FILENAME_SEP, os.path.basename(filename))
   app.logger.info(tokens)
   (vtype, exchange, code) = tokens[0], tokens[1], tokens[2]
-  cursor.execute('select id from Variety where type = %s and exchange = %s and code = %s', (vtype, exchange, code))
-  data_id = cursor.fetchone()
+  data_id = db.execute_and_fetch('select id from Variety where type = %s and exchange = %s and code = %s', (vtype, exchange, code))[0]
   if not data_id:
     app.logger.warn('Variety does not exist: %s %s %s', vtype, exchange, code)
     return False
   else:
     app.logger.info('import data id: %s', data_id[0])
-    fail_count = 0
+    sql_list = []
     with open(filename) as f:
       lines = f.readlines()
       for line in lines:
@@ -73,26 +67,21 @@ def import_data(db, filename):
           continue
         start_date = datetime.strptime(tokens[0], '%Y/%m/%d').strftime('%Y-%m-%d')
         start_ts = '%s 00:00:00' % tokens[0]
-        try:
-          cursor.execute('insert into Price(vid, unit, period, start_date, start_ts, open, high, low, close, volume, turnover) ' + \
-                         'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
-                         (data_id[0], #vid
-                          get_unit(vtype, exchange), #unit
-                          '1d', #period
-                          start_date, #start_date
-                          start_ts, #start_ts
-                          c2int(tokens[1]), # open
-                          c2int(tokens[2]), #high
-                          c2int(tokens[3]), #low
-                          c2int(tokens[4]), #close
-                          int(tokens[5]), #volume
-                          float(tokens[6]) #turnover
-                          ))
-        except Exception as e:
-          fail_count += 1
+        sql_list.append('insert into Price(vid, unit, period, start_date, start_ts, open, high, low, close, volume, turnover) ' + \
+                        'values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                        (data_id[0], #vid
+                         get_unit(vtype, exchange), #unit
+                         '1d', #period
+                         start_date, #start_date
+                         start_ts, #start_ts
+                         c2int(tokens[1]), # open
+                         c2int(tokens[2]), #high
+                         c2int(tokens[3]), #low
+                         c2int(tokens[4]), #close
+                         int(tokens[5]), #volume
+                         float(tokens[6]) #turnover
+                        ))
     
-    db.commit()
-    cursor.close()
-    if fail_count > 0:
-      app.logger.warn('Fail execution count: %s', fail_count)
+    db.batch_execute(sql_lsit)
+    db.close()
     return True

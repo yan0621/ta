@@ -2,7 +2,7 @@ drop table if exists Price;
 drop table if exists Variety;
 
 create table Variety (
-  id INT(32) UNSIGNED AUTO_INCREMENT NOT NULL,
+  id INT(32) AUTO_INCREMENT NOT NULL,
   type ENUM('ST', 'FX', 'FU') NOT NULL,
   exchange VARCHAR(20),
   name VARCHAR(128) CHARACTER SET utf8 NOT NULL,
@@ -13,8 +13,8 @@ create table Variety (
 );
 
 create table Price (
-  id INT(64) UNSIGNED AUTO_INCREMENT NOT NULL,
-  vid INT(32) UNSIGNED NOT NULL,
+  id INT(64) AUTO_INCREMENT NOT NULL,
+  vid INT(32) NOT NULL,
   unit ENUM('CNY', 'USD', 'HKD') NOT NULL,
   period VARCHAR(16) NOT NULL,
   start_date DATETIME NOT NULL,

@@ -59,11 +59,10 @@ def data_uploaded(filename):
 @bp.route('/ta/list')
 def list_variety():
   db = get_db()
-  cursor = db.cursor()
-  cursor.execute('select * from Variety')
+  variety_in_db = db.execute_and_fetch('select * from Variety')
 
   variety_list = []
-  for (data_id, vtype, exchange, name, code) in cursor:
+  for (data_id, vtype, exchange, name, code) in variety_in_db:
     variety_list.append({
       'id': id,
       'type': vtype,
@@ -72,12 +71,12 @@ def list_variety():
       'code': code
     })
 
-  cursor.close()
+  db.close()
   return render_template('ta/list.html', variety_list=variety_list)
 
 
 @bp.route('/ta/show/<data_id>')
 def show_variety(data_id):
   db = get_db()
-  cursor = db.cursor()
+  
   return render_template('/ta/show.html')
