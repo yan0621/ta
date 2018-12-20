@@ -10,16 +10,16 @@
   <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 </head>
 <body>
-  <div id="container" style="width:100%; height:400px;"></div>
+  <div id="container" style="width:100%; height:600px;"></div>
+	<button id="next"/>next</button>
   <script type="text/javascript">
-    var usdtoeur = [
-
-    ]
+    var pdata = {{ render_data | safe }};
+		var chart = null;
     $(function () { 
       // split the data set into ohlc and volume
       var ohlc = [],
           volume = [],
-          dataLength = data.length,
+          dataLength = pdata.length,
           // set the allowed units for data grouping
           groupingUnits = [[
               'week',                         // unit name
@@ -28,43 +28,38 @@
               'month',
               [1, 2, 3, 4, 6]
           ]],
-
           i = 0;
 
       for (i; i < dataLength; i += 1) {
-          ohlc.push([
-              data[i][0], // the date
-              data[i][1], // open
-              data[i][2], // high
-              data[i][3], // low
-              data[i][4] // close
-          ]);
+				ohlc.push([
+						pdata[i][0], // the date
+	          pdata[i][1], // open
+	          pdata[i][2], // high
+	          pdata[i][3], // low
+	          pdata[i][4] // close
+	      ]);
 
-          volume.push([
-              data[i][0], // the date
-              data[i][5] // the volume
-          ]);
+	      volume.push([
+	          pdata[i][0], // the date
+	          pdata[i][5] // the volume
+	      ]);
       }
 
-
       // create the chart
-      Highcharts.stockChart('container', {
-
+      chart = Highcharts.stockChart('container', {
           rangeSelector: {
               selected: 1
           },
-
           title: {
-              text: 'AAPL Historical'
+              text: '{{ meta.name }} {{ meta.code }}'
           },
-
           yAxis: [{
               labels: {
                   align: 'right',
                   x: -3
               },
               title: {
-                  text: 'OHLC'
+                  text: 'Price'
               },
               height: '60%',
               lineWidth: 2,
@@ -84,14 +79,16 @@
               offset: 0,
               lineWidth: 2
           }],
-
           tooltip: {
               split: true
           },
-
           series: [{
               type: 'candlestick',
-              name: 'AAPL',
+              name: '{{ meta.name }}',
+              color: 'green',
+						  lineColor: 'green',
+						  upColor: 'red',
+						  upLineColor: 'red',
               data: ohlc,
               dataGrouping: {
                   units: groupingUnits
@@ -107,5 +104,22 @@
           }]
     });
   });
+	
+	$("#next").click(function() {
+		var url = '/ta/fetch?';
+		url += 'data_id=' + {{ meta.data_id }} + '&';
+		url += 'start_date=' + + '&';
+		url += 'offset=' + + '&';
+		url += 'period=1d';
+		$.getJSON(url, function(response) {
+			if (response.status == 'ok') {
+				chart.series[0].addPoint(response.data, true, true)
+				chart.series[1].addPoint(response.data, true, true)
+				chart.redraw();
+			} else {
+				alert('server error!')
+			}
+		});
+	});
   </script>
 </body>

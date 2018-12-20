@@ -1,7 +1,7 @@
 import os
 
 from flask import (
-    Blueprint, flash, Flask, g, redirect, render_template, request, url_for
+    Blueprint, flash, Flask, g, jsonify, redirect, render_template, request, url_for
 )
 from werkzeug.utils import secure_filename
 
@@ -79,4 +79,40 @@ def list_variety():
 def show_variety(data_id):
   db = get_db()
   
-  return render_template('/ta/show.html')
+  variety = db.execute_and_fetch('select * from Variety where id = %s' % data_id)[0]
+  meta = {
+    'data_id': data_id,
+    'name': variety[3], # name
+    'code': variety[4], # code
+  }
+  
+  pdata = db.execute_and_fetch('select * from Price where id = %s' % data_id)
+  render_data = []
+  for p in pdata:
+    render_data.append([
+      p[5], # timestamp
+      p[6]/100.0, # open
+      p[7]/100.0, # high
+      p[8]/100.0, # low
+      p[9]/100.0, # close
+      p[10]] # volume
+    )
+  return render_template('/ta/show.html', meta=meta, render_data=render_data)
+
+
+@bp.route('/ta/fetch')
+def fetch_data():
+  data_id = request.args.get('data_id')
+  start_date = request.args.get('start_date')
+  offset = request.args.get('offset')
+  period = request.args.get('period')
+  
+  db = get_db()
+  prices = db.execute_and_fetch(
+          'select * from Price where id = %s and start_date > %s and period = %s ordered by start_date limit %s' % (data_id, start_date, period, offset))
+  pdata = []
+  
+  return jsonify({
+    'status': 'ok',
+    'data': pdata
+  })
