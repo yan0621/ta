@@ -1,4 +1,5 @@
 import os
+import time
 
 from flask import (
     Blueprint, flash, Flask, g, jsonify, redirect, render_template, request, url_for
@@ -86,17 +87,26 @@ def show_variety(data_id):
     'code': variety[4], # code
   }
   
-  pdata = db.execute_and_fetch('select * from Price where id = %s' % data_id)
+  pdata = db.execute_and_fetch('select * from Price where vid = %s' % data_id)
   render_data = []
   for p in pdata:
     render_data.append([
-      p[5], # timestamp
+      1000 * time.mktime(p[5].timetuple()), # datetime -> timestamp
       p[6]/100.0, # open
       p[7]/100.0, # high
       p[8]/100.0, # low
       p[9]/100.0, # close
       p[10]] # volume
     )
+  return render_template('/ta/show.html', meta=meta, render_data=render_data)
+
+
+@bp.route('/ta/dobtest')
+def double_blind_test():
+  db = get_db()
+  meta = {}
+  render_data = []
+
   return render_template('/ta/show.html', meta=meta, render_data=render_data)
 
 
@@ -109,7 +119,9 @@ def fetch_data():
   
   db = get_db()
   prices = db.execute_and_fetch(
-          'select * from Price where id = %s and start_date > %s and period = %s ordered by start_date limit %s' % (data_id, start_date, period, offset))
+          'select * from Price where vid = %s and start_date >= %s and period = %s ' +
+          'ordered by start_date asc limit %s'
+          % (data_id, start_date, period, offset))
   pdata = []
   
   return jsonify({

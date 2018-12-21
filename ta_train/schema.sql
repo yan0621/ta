@@ -25,6 +25,7 @@ create table Price (
   close INT(32) NOT NULL,
   volume INT(64) NOT NULL,
   turnover INT(64) NOT NULL,
+  reinstatement ENUM('NO', 'FW', 'BW') DEFAULT 'NO' NOT NULL,
 
   PRIMARY KEY (id),
   FOREIGN KEY (vid) REFERENCES Variety(id),
