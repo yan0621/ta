@@ -40,5 +40,8 @@ def create_app(test_config=None):
 
   from . import ta
   app.register_blueprint(ta.bp)
+  
+  from . import ta_cl
+  ta_cl.init_app(app)
 
   return app
