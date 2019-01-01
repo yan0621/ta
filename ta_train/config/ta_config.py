@@ -32,6 +32,22 @@ TA_CONFIG = {
       },
       'hand_size': 10,
     },
+    'rb': {
+      'deposit_rate': 0.13,
+      'fee_config': {
+        'method': 'by_percent',
+        'value': 0.0001,
+      },
+      'hand_size': 10,
+    },
+    'ru': {
+      'deposit_rate': 0.14,
+      'fee_config': {
+        'method': 'by_percent',
+        'value': 0.00005,
+      },
+      'hand_size': 10,
+    }
   },
   'ST': {
     

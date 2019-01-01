@@ -105,13 +105,23 @@ class STController(object):
     self.unrl_profit = unrl_profit
     return self.get_statistics()
   
-  def set_sl(self, sl):
+  def set_sl(self, sl, id=0):
     for position in self.long_positions:
-      if not position['closed']:
+      if id > 0 and position['id'] == id:
+        position['sl'] = sl
+        return
+      elif not position['closed']:
         position['sl'] = sl
     for position in self.short_positions:
-      if not position['closed']:
+      if id > 0 and position['id'] == id:
         position['sl'] = sl
+        return
+      elif not position['closed']:
+        position['sl'] = sl
+  
+  def get_risk_capacity(self, percent, offset):
+    '''Ammount of hands with given risk percent and price offset.'''
+    return (INIT_WEALTH + self.profit) * percent * self.config['deposit_rate'] / (offset * 100.0 * self.config['hand_size']);
     
   def get_statistics(self):
     return {

@@ -44,7 +44,13 @@ def cl_command():
         break
       elif cmd == 'show' or cmd == 'sh':
         pp.pprint(controller.get_statistics())
-        continue
+      elif cmd.startswith('risk') or cmd.startswith('r '):
+        # risk [percent] [price] [sl]
+        tokens = cmd.split(' ')
+        if len(tokens) != 4:
+          click.echo('usage: risk [percent] [price] [sl]')
+          continue
+        click.echo(controller.get_risk_capacity(float(tokens[1]), abs(float(tokens[2]) - float(tokens[3]))))
       elif cmd.startswith('long') or cmd.startswith('l '):
         # long [price] [volume] [sl]
         tokens = cmd.split(' ')
@@ -78,15 +84,17 @@ def cl_command():
         for i in range(1, len(tokens)):
           pp.pprint(controller.update(float(tokens[i])))
       elif cmd.startswith('sl'):
-        # sl [value]
+        # sl [value] [postion_id]
         tokens = cmd.split(' ')
-        if len(tokens) != 2:
-          click.echo('usage: sl [value]')
+        if len(tokens) not in (2, 3):
+          click.echo('usage: sl [value] [position_id]')
           continue
-        controller.set_sl(float(tokens[1]))
+        if len(tokens) == 2:
+          controller.set_sl(float(tokens[1]))
+        elif len(tokens) == 3:
+          controller,set_sl(float(tokens[1]), int(tokens[2]))
       else:
         click.echo('Unknown action!')
-        continue
     except Exception as e:
       print(str(e))
       continue
