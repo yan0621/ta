@@ -1,9 +1,9 @@
-import logging
 
-from flask import current_app
-
-app = current_app
 
 class Price(object):
-  def __init__(self):
-    app.logger.info('Price object created!')
+  
+  def __init__(self, open_price, high_price, low_price, close_price, volume):
+    self.open = open_price
+    self.high = high_price
+    self.low = low_price
+    self.close = close_price
