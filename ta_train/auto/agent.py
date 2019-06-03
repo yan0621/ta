@@ -23,25 +23,23 @@ class Agent(object):
     self._controller_dict = {}
     for target in target_list:
       self._controller_dict[target] = controller.STController(ta_config.TA_CONFIG['FT'][target])
+
+  def _get_controller(self, target):
+    return self._controller_dict[target]
     
   def execute_orders(self, orders, date):
     failed_orders = []
     for order in orders:
-      #pdb.set_trace()
-      if order.target not in self._controller_dict:
-        logger.warn('target %s in the order is not registered yet!', order.target)
-        continue
-      
+      #if date.month == 2 and date.day >= 4:
+      #  pdb.set_trace()
       if not self._validate_order(order):
         continue
       
-      controller = self._controller_dict[order.target]
-      #if date.month == 12 and date.day >= 5:
-      #  pdb.set_trace()
+      controller = self._get_controller(order.target)
       if isinstance(order, CloseOrder):
         cpos_id = self._pos_id_dict[self._target_pos[order.target].id]
-        controller.close(cpos_id, price=order.price, hands=order.volume)
-        self._target_pos[order.target].decrease(order.volume)
+        controller.close(cpos_id, price=order.price, hands=order.quantity)
+        self._target_pos[order.target].decrease(order.quantity)
         logger.info('close pos %s' % self._target_pos[order.target].id)
       elif isinstance(order, SetSlOrder):
         controller.set_sl(order.sl)
@@ -64,6 +62,8 @@ class Agent(object):
       if order.target not in self._target_pos:
         logger.warn('Trying to close a pos that does not exist!')
         return False
+      else:
+        return True
     else:
       return True
   
@@ -90,30 +90,47 @@ class Agent(object):
 
 
   def monitor_market(self, date):
+    updated = False
     for target, pos in self._target_pos.items():
       if pos.volume <=0 or not self._market.is_open(target, date) or not pos.sl:
         continue
       price = self._market.get_price(target, date)
       cpos_id = self._pos_id_dict[pos.id]
-      controller = self._controller_dict[pos.target]
+      controller = self._get_controller(target)
       if pos.pos_type == 'long' and price.low < pos.sl:
+        logger.info('auto close long order: low = %s, sl = %s', price.low, pos.sl)
         controller.update(price.low)
         pos.decrease(pos.volume)
         logger.info('close pos %s' % pos.id)
+        updated = True
       elif pos.pos_type == 'short' and price.high > pos.sl:
+        logger.info('auto close short order: high = %s, sl = %s', price.high, pos.sl)
         controller.update(price.high)
         pos.decrease(pos.volume)
         logger.info('close pos %s' % pos.id)
+        updated = True
       controller.update(price.close)
+    return updated
 
   def analyze(self):
     for target, controller in self._controller_dict.items():
       stat = controller.get_statistics()
       logger.info(str(stat))
-      logger.info('%s: %s' % (target, stat['profit_rate']))
+      logger.info('%s: %s' % (target, stat['profit_rate'] + stat['unrl_profit_rate']))
 
   def get_pos(self):
     return [p for (t, p) in self._target_pos.items() if p.volume > 0]
 
   def get_target_pos(self, target):
     return self._target_pos.get(target, None)
+    
+  def get_wealth(self):
+    wealth = 0
+    for target, controller in self._controller_dict.items():
+      stat = controller.get_statistics()
+      wealth += stat['wealth']
+    
+    return wealth
+    
+  def get_target_stat(self, target):
+    return self._controller_dict[target].get_statistics()

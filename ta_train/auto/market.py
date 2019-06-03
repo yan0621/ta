@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from ta_train.data import market_data_loader
 from ta_train.objects import price
@@ -9,7 +10,7 @@ import pdb
 
 class Market(object):
   
-  DATA_DIR_PATH = '/tmp/mdata'
+  DATA_DIR_PATH = '/Users/yanpan/Documents/mdata'
   
   def __init__(self, target_list):
     self._loader = market_data_loader.TDXFileMarketDataLoader()
@@ -19,7 +20,12 @@ class Market(object):
   def _load_data(self, target_list):
     for target in target_list:
       logger.info('load data for %s', target)
-      self._load_file_data(target, '%s/%s.txt' % (self.DATA_DIR_PATH, target))
+      file_path = '%s/%sL9.txt' % (self.DATA_DIR_PATH, target.upper())
+      if os.path.exists(file_path):
+        self._load_file_data(target, file_path)
+      else:
+        file_path = '%s/%s.txt' % (self.DATA_DIR_PATH, target.upper())
+        self._load_file_data(target, file_path)
 
   def _load_file_data(self, target, file):
     data_list = self._loader.load_from_file(file)
@@ -64,7 +70,7 @@ class Market(object):
     idx = self._data[target]['price_idx_dict'].get(self._get_date_key_str(date), None)
     if not idx or idx < days_before:
       return None
-    result = self._data[target]['prices'][idx - days_before : idx]
+    result = self._data[target]['prices'][idx - days_before : idx + 1]
     result.reverse()
     return result
 
@@ -84,7 +90,7 @@ class Market(object):
     idx = date_dict.get(self._get_date_key_str(date), None)
     if not idx or idx < days_before:
       return None
-    result = vlist[idx - days_before : idx]
+    result = vlist[idx - days_before : idx + 1]
     result.reverse()
     return result
 

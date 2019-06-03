@@ -28,6 +28,8 @@ class STController(object):
       return hands * fee_config['value']
     elif fee_config['method'] == 'by_percent':
       return price * self.config['hand_size'] * hands * fee_config['value']
+    elif fee_config['method'] == 'fixed':
+      return fee_config['value']
     else:
       raise Exception('Bad fee config!')
 
@@ -219,4 +221,5 @@ class STController(object):
       'unrl_profit_rate': self.unrl_profit / (self.profit + INIT_WEALTH),
       'profit': self.profit + self.unrl_profit,
       'profit_rate': (self.profit + self.unrl_profit) / INIT_WEALTH,
+      'wealth': self.profit + self.unrl_profit + INIT_WEALTH,
     }

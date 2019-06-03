@@ -1,4 +1,5 @@
 from . import ma_trade_strategy
+from . import balance_trade_strategy
 
 
 class Trader(object):
@@ -28,27 +29,15 @@ class Trader(object):
         orders.append(order)
 
     return orders
-
-  def get_orders_on_close(self, target_list, date):
-    orders = []
-    # process existing orders
-    pos_list = self._agent.get_pos()
-    for pos in pos_list:
-      order = self._strategy.should_close_on_close(pos, date)
-      if order:
-        orders.append(order)
-
-    # create new orders
-    for target in target_list:
-      order = self._strategy.should_open_on_close(target, date)
-      if order:
-        orders.append(order)
-        
-    return orders 
     
   def _load_strategy(self, strategy_name):
     strategy = None
     if strategy_name == 'ma':
       strategy = ma_trade_strategy.MATradeStrategy(self._agent, self._market)
+    elif strategy_name == 'balance':
+      strategy = balance_trade_strategy.BalanceTradeStrategy(self._agent, self._market)
 
     self._strategy = strategy
+    
+  def analyze(self):
+    self._strategy.analyze()

@@ -7,11 +7,8 @@ class TradeStrategy(object):
   def should_open_on_open(self, target, date):
     pass
     
-  def should_close_on_open(self, pos, date):
+  def should_update_on_open(self, pos, date):
     pass
     
-  def should_open_on_close(self, target, date):
-    pass
-    
-  def should_close_on_close(self, pos, date):
+  def analyze(self):
     pass

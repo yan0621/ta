@@ -20,8 +20,6 @@ class MATradeStrategy(trade_strategy.TradeStrategy):
     ma60 = self._market.get_recent_indicator(target, 'ma60', date, 3)
     if not prices or not ma5 or len(ma5) < 3 or not ma20 or len(ma20) < 2 or not ma60 or len(ma60) < 2:
       return None
-    #if date.month == 12 and date.day >= 5:
-    #  pdb.set_trace()
     return self._should_open_on_prices(target, prices[0].open, prices[1:], ma5[1:], ma20[1:], ma60[1:])
 
   def should_update_on_open(self, pos, date):
@@ -87,27 +85,30 @@ class MATradeStrategy(trade_strategy.TradeStrategy):
     return latest_price_v < ma20[0] and ma5[0] < ma20[0] and ma20[0] < ma60[0] and ma20[0] < ma20[1] and ma60[0] < ma60[1]
     
   def _look_for_long_sl(self, recent_prices, ma20_v, ma60_v):
-    if recent_prices[0].low > recent_prices[1].low:
-      return max(recent_prices[0].low, ma60_v)
-    else:
-      for i in range(1, len(recent_prices)):
-        if recent_prices[i].low > ma20_v:
-          continue
-        if (recent_prices[i].close < recent_prices[i].open or
-            (recent_prices[i].low <= recent_prices[i-1].low and recent_prices[i].low <= recent_prices[i+1].low)):
-          return max(recent_prices[i].low, ma60_v)
+    #if recent_prices[0].low < recent_prices[1].low:
+    #  return max(recent_prices[0].low, ma60_v)
+    #else:
+    for i in range(1, len(recent_prices)):
+      if recent_prices[i].low > ma20_v:
+        continue
+      if (recent_prices[i].close < recent_prices[i].open or
+         (recent_prices[i].low <= recent_prices[i-1].low and recent_prices[i].low <= recent_prices[i+1].low)):
+        return max(recent_prices[i].low, ma60_v)
           
-      return ma60_v
+    return ma60_v
 
   def _look_for_short_sl(self, recent_prices, ma20_v, ma60_v):
-    if recent_prices[0].high > recent_prices[1].high:
-      return min(recent_prices[0].high, ma60_v)
-    else:
-      for i in range(1, len(recent_prices)):
-        if recent_prices[i].high < ma20_v:
-          continue
-        if (recent_prices[i].close > recent_prices[i].open or
-            (recent_prices[i].high >= recent_prices[i-1].high and recent_prices[i].high >= recent_prices[i+1].high)):
-          return min(recent_prices[i].high, ma60_v)
+    #if recent_prices[0].high > recent_prices[1].high:
+    #  return min(recent_prices[0].high, ma60_v)
+    #else:
+    for i in range(1, len(recent_prices)):
+      if recent_prices[i].high < ma20_v:
+        continue
+      if (recent_prices[i].close > recent_prices[i].open or
+         (recent_prices[i].high >= recent_prices[i-1].high and recent_prices[i].high >= recent_prices[i+1].high)):
+        return min(recent_prices[i].high, ma60_v)
 
-      return ma60_v
+    return ma60_v
+    
+  def analyze(self):
+    pass

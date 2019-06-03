@@ -37,7 +37,7 @@ class TDXFileMarketDataLoader(FileMarketDataLoader):
     tokens = line.strip().split('\t')
     tokens = [t.replace(' ', '') for t in tokens]
     tokens = [t for t in tokens if t]
-    if len(tokens) < 12:
+    if len(tokens) < 8:
       logger.warn('skip line %s', line)
     else:
       try:
@@ -48,9 +48,9 @@ class TDXFileMarketDataLoader(FileMarketDataLoader):
           'low': float(tokens[3]),
           'close': float(tokens[4]),
           'volume': float(tokens[5]),
-          'ma5': float(tokens[6]),
-          'ma20': float(tokens[7]),
-          'ma60': float(tokens[8]),
+          'ma5': float(tokens[6]) if len(tokens) > 6 else 0,
+          'ma20': float(tokens[7]) if len(tokens) > 7 else 0,
+          'ma60': float(tokens[8]) if len(tokens) > 8 else 0,
         }
       except Exception as e:
         logger.warn(str(e))

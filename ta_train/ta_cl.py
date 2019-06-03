@@ -14,7 +14,9 @@ from simulated import controller as st_controller
 def auto_command():
   """Command line auto training."""
   click.echo('Auto training starts running.')
-  auto_main.run(['y'], '2016-01-01', '2019-01-01', 'day')
+  auto_main.run(['tlt', 'spy'], '2016-05-01', '2019-05-01', 'day', trade_strategy='balance', agent_type='ST')
+  #auto_main.run(['cf', 'ma', 'sr', 'v', 'c', 'a', 'y', 'ag'], '2015-01-01', '2019-05-01', 'day')
+  #auto_main.run(['a', 'y'], '2016-01-01', '2016-05-01', 'day')
 
 
 @click.command('ta-cl')
