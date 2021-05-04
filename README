@@ -1,9 +1,22 @@
 Pre:
-* Flask (pip install --user -U Flask)
+* install python3
+* install pip (python3 on Mac)
+  $ curl -O https://bootstrap.pypa.io/ez_setup.py
+  $ python3 ez_setup.py
+  $ curl -O https://bootstrap.pypa.io/get-pip.py
+  $ python3 get-pip.py
+* Flask
+  $ pip3 install --user flask)
+  add to Path
 * Mysql connector for python (pip install --user mysql-connector-python)
 * (Opt) Mysql database
 
-Start:
+Start app ta_train:
 export FLASK_APP=ta_train
+export FLASK_ENV=development
+flask run
+
+Start app st_assistant:
+export FLASK_APP=st_assistant
 export FLASK_ENV=development
 flask run
