@@ -3,7 +3,7 @@ import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-from data import data_pro
+from ta_train.data import data_pro
 
 from ta_train.db_model import DB
 from ta_train.mock_db_model import MockDB

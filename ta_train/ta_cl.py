@@ -4,9 +4,9 @@ import pprint
 from flask import Flask, g
 from flask.cli import with_appcontext
 
-from auto import auto_main
-from config import ta_config
-from simulated import controller as st_controller
+from ta_train.auto import auto_main
+from ta_train.config import ta_config
+from ta_train.simulated import controller as st_controller
 
 
 @click.command('ta-auto')
