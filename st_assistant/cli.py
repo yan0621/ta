@@ -4,11 +4,15 @@ import pprint
 from flask import Flask, g
 from flask.cli import with_appcontext
 
-@click.command('auto')
+from st_assistant.data import stock_price_loader
+
+@click.command('load-price')
 @with_appcontext
 def auto_command():
-  """Command line auto running."""
-  click.echo('Auto starts running.')
+  """Command line for loading prices."""
+  click.echo('Starts loading prices.')
+  loader = stock_price_loader.SinaStockPriceLoader()
+  loader.load()
 
 
 def init_app(app):
