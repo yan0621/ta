@@ -12,7 +12,7 @@ def auto_command():
   """Command line for loading prices."""
   click.echo('Starts loading prices.')
   loader = stock_price_loader.SinaStockPriceLoader()
-  loader.load()
+  loader.load(['sh600928', 'sz002307'])
 
 
 def init_app(app):
