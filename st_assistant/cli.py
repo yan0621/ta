@@ -4,6 +4,7 @@ import pprint
 from flask import Flask, g
 from flask.cli import with_appcontext
 
+from st_assistant import stock_analyzer
 from st_assistant.data import stock_pos_loader
 from st_assistant.data import stock_price_loader
 
@@ -22,7 +23,18 @@ def load_price():
 def load_pos():
   click.echo('Starts loading stock pos.')
   loader = stock_pos_loader.StockPosLoader()
-  loader.load()
+  pos = loader.load()
+  print(pos)
+
+@click.command('analyze')
+@with_appcontext
+def analyze():
+  pos_loader = stock_pos_loader.StockPosLoader()
+  pos = loader.load()
+  stock_ids = [p.stock_id for p in pos]
+  price_loader = stock_price_loader.SinaStockPriceLoader()
+  prices = price_loader.load(stock_ids)
+  analyzer = stock_analyzer.Analyzer(pos, prices)
 
 
 def init_app(app):
