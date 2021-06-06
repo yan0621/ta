@@ -9,7 +9,7 @@ class StockLevel(enum.Enum):
 class StockPos(object):
 
   def __init__(self, stock_id=None, name=None, level=None, rv=None, offset=None, pos=None, pos_value=None):
-    self.stock_id = stock_id
+    self.id = stock_id
     self.name = name
     self.level = level
     self.rv = rv
@@ -18,7 +18,7 @@ class StockPos(object):
     self.pos_value = pos_value
 
   def __str__(self):
-    return "{%s, %s, level=%s, rv=%d, pos=%d, pos_v=%d}" % (self.stock_id, self.name, self.level, self.rv if self.rv else 0, self.pos, self.pos_value)
+    return "{%s, %s, level=%s, rv=%d, pos=%d, pos_v=%d}" % (self.id, self.name, self.level, self.rv if self.rv else 0, self.pos, self.pos_value)
 
   def __repr__(self):
     return self.__str__()

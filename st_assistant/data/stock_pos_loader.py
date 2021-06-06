@@ -60,13 +60,14 @@ class StockPosLoader(object):
     raise Exception("Bad stock level value %s" % input)
 
   def _parse_code(self, stock_pos, input):
-    stock_pos.stock_id = input
+    stock_pos.id = input.lower()
 
   def _parse_name(self, stock_pos, input):
     stock_pos.name = input
 
   def _parse_rv(self, stock_pos, input):
     if input == '?':
+      stock_pos.rv = 0
       return
     tokens = input.split(' ')
     stock_pos.rv = int(tokens[0])

@@ -27,16 +27,21 @@ def load_pos():
   print(pos)
 
 @click.command('analyze')
+@click.argument('cash')
 @with_appcontext
-def analyze():
+def analyze(cash):
   pos_loader = stock_pos_loader.StockPosLoader()
-  pos = loader.load()
-  stock_ids = [p.stock_id for p in pos]
+  pos = pos_loader.load()
+  stock_ids = [p.id for p in pos]
   price_loader = stock_price_loader.SinaStockPriceLoader()
-  prices = price_loader.load(stock_ids)
-  analyzer = stock_analyzer.Analyzer(pos, prices)
+  prices = price_loader.loadFromDataFile()
+  analyzer = stock_analyzer.Analyzer(pos, prices, int(cash))
+  actions = analyzer.run()
+  for action in actions:
+    print(action)
 
 
 def init_app(app):
   app.cli.add_command(load_price)
   app.cli.add_command(load_pos)
+  app.cli.add_command(analyze)
