@@ -12,11 +12,11 @@ from st_assistant.data import stock_price_loader
 @with_appcontext
 def load_price():
   """Command line for loading prices."""
-  click.echo('Starts loading prices.')
-  loader = stock_price_loader.SinaStockPriceLoader()
-  prices = loader.load(['sh600928', 'sz002307'])
-  print(prices)
-
+  pos_loader = stock_pos_loader.StockPosLoader()
+  pos = pos_loader.load()
+  stock_ids = [p.id for p in pos]
+  price_loader = stock_price_loader.SinaStockPriceLoader()
+  price_loader.loadToFile(stock_ids)
 
 @click.command('load-pos')
 @with_appcontext
@@ -27,7 +27,7 @@ def load_pos():
   print(pos)
 
 @click.command('analyze')
-@click.argument('cash')
+@click.option('--cash')
 @with_appcontext
 def analyze(cash):
   pos_loader = stock_pos_loader.StockPosLoader()

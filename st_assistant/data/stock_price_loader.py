@@ -15,7 +15,7 @@ class StockPriceLoader(object):
 
 class SinaStockPriceLoader(StockPriceLoader):
 
-  FAKE_PRICE_FILE = '/Users/yanpan/Documents/fake_stock_price_data.txt'
+  PRICE_FILE = '/Users/yanpan/Documents/stock_price_data.txt'
   SERVICE_URL = 'https://hq.sinajs.cn/list='
   RESP_REG = r'var (.*)="(.*)";'
   HK_EX_CNY_RATE = 0.82
@@ -27,8 +27,15 @@ class SinaStockPriceLoader(StockPriceLoader):
       print(response)
       return self.loadFromData(response)
 
+  def loadToFile(self, stock_ids: list):
+    url = '%s%s' % (self.SERVICE_URL, ','.join(stock_ids))
+    with urllib.request.urlopen(url) as f:
+      response = f.read().decode('gb2312')
+      with open(self.PRICE_FILE, 'r+') as f:
+        f.write(response)
+
   def loadFromDataFile(self):
-    with open(self.FAKE_PRICE_FILE) as f:
+    with open(self.PRICE_FILE) as f:
       return self.loadFromData(f.read())
 
   def loadFromData(self, stock_price_data):
