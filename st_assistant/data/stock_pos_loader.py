@@ -5,6 +5,7 @@ from st_assistant.data.stock_pos import StockPos
 class StockPosLoader(object):
 
   DEFAULT_POS_FILE = '/Users/yanpan/Documents/stock_pos.txt'
+  HK_EX_CNY_RATE = 0.82
 
   def __init__(self, pos_file=None):
     self._pos_file = pos_file if pos_file else self.DEFAULT_POS_FILE
@@ -71,6 +72,8 @@ class StockPosLoader(object):
       return
     tokens = input.split(' ')
     stock_pos.rv = int(tokens[0])
+    if stock_pos.id.startswith('hk'):
+      stock_pos.rv *= self.HK_EX_CNY_RATE
 
   def _parse_pos(self, stock_pos, input):
     stock_pos.pos = int(input)

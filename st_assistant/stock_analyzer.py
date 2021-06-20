@@ -33,16 +33,19 @@ class Analyzer(object):
 
   def run(self):
     wealth = self.calculateWealth()
+    print('wealth=', wealth)
     strategy_obj = strategy.Strategy()
     actions = []
     for pos in self._pos_list:
       current_price = self._stock_price_dict[pos.id].current
+      if current_price == 0:
+        continue # skip offline stock
       pos_rate = pos.pos * current_price / wealth
       pos_v_rate = pos.pos_value / wealth
       max_pos_rate = strategy_obj.getMaxPos(pos, current_price)
       recommended_pos_rate = strategy_obj.getRecommendedPos(pos, current_price)
-      print(pos.id, pos.name, pos_rate, max_pos_rate, recommended_pos_rate)
-      if pos_rate < recommended_pos_rate and pos_v_rate < max_pos_rate:
+      print('%s %s pos_rate=%f, pos_v_rate=%f, max_pos_rate=%f, recommended_pos_rate=%f' % (pos.id, pos.name, pos_rate, pos_v_rate, max_pos_rate, recommended_pos_rate))
+      if pos_v_rate < recommended_pos_rate:
         action = Action(ActionType.BUY, pos.id, pos.name, min(recommended_pos_rate - pos_rate, max_pos_rate - pos_v_rate) * wealth)
         actions.append(action)
       elif pos_rate > max_pos_rate:
