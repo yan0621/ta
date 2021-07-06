@@ -4,6 +4,7 @@ import pprint
 from flask import Flask, g
 from flask.cli import with_appcontext
 
+from st_assistant import offset_analyzer
 from st_assistant import stock_analyzer
 from st_assistant.data import stock_pos_loader
 from st_assistant.data import stock_price_loader
@@ -40,8 +41,19 @@ def analyze(cash):
   for action in actions:
     print(action)
 
+@click.command('offset')
+@with_appcontext
+def offset():
+  pos_loader = stock_pos_loader.StockPosLoader()
+  pos = pos_loader.load()
+  stock_ids = [p.id for p in pos]
+  price_loader = stock_price_loader.SinaStockPriceLoader()
+  prices = price_loader.loadFromDataFile()
+  analyzer = offset_analyzer.OffsetAnalyzer(pos, prices)
+  
 
 def init_app(app):
   app.cli.add_command(load_price)
   app.cli.add_command(load_pos)
   app.cli.add_command(analyze)
+  app.cli.add_command(offset)

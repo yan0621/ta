@@ -5,7 +5,7 @@ class Strategy(object):
   def __init__(self):
     pass
 
-  def getMaxPos(self, stock_pos, current_price):
+  def getWeight(self, stock_pos):
     if stock_pos.level == StockLevel.LONG:
       return 0.2
     elif stock_pos.level == StockLevel.NML:
@@ -14,6 +14,9 @@ class Strategy(object):
       return 0.05
     elif stock_pos.level == StockLevel.UD:
       return 0.05
+
+  def getMaxPos(self, stock_pos):
+    return getWeight(stock_pos)
 
   def getRecommendedPos(self, stock_pos, current_price):
     #print(stock_pos)

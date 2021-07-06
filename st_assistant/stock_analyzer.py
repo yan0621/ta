@@ -42,7 +42,7 @@ class Analyzer(object):
         continue # skip offline stock
       pos_rate = pos.pos * current_price / wealth
       pos_v_rate = pos.pos_value / wealth
-      max_pos_rate = strategy_obj.getMaxPos(pos, current_price)
+      max_pos_rate = strategy_obj.getMaxPos(pos)
       recommended_pos_rate = strategy_obj.getRecommendedPos(pos, current_price)
       print('%s %s pos_rate=%f, pos_v_rate=%f, max_pos_rate=%f, recommended_pos_rate=%f' % (pos.id, pos.name, pos_rate, pos_v_rate, max_pos_rate, recommended_pos_rate))
       if pos_v_rate < recommended_pos_rate:
