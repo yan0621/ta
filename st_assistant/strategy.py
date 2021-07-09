@@ -16,7 +16,7 @@ class Strategy(object):
       return 0.05
 
   def getMaxPos(self, stock_pos):
-    return getWeight(stock_pos)
+    return self.getWeight(stock_pos)
 
   def getRecommendedPos(self, stock_pos, current_price):
     #print(stock_pos)
