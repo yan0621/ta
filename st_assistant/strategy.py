@@ -7,7 +7,7 @@ class Strategy(object):
 
   def getWeight(self, stock_pos):
     if stock_pos.level == StockLevel.LONG:
-      return 0.2
+      return 0.15
     elif stock_pos.level == StockLevel.NML:
       return 0.15
     elif stock_pos.level == StockLevel.TRO:
