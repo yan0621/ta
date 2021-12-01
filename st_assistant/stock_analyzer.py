@@ -1,4 +1,5 @@
 import enum
+import math
 
 from st_assistant import strategy
 
@@ -9,14 +10,15 @@ class ActionType(enum.Enum):
 
 class Action(object):
 
-  def __init__(self, action, target_id, target_name, volume):
+  def __init__(self, action, target_id, target_name, volume, volume_number):
     self.action = action
     self.target_id = target_id
     self.target_name = target_name
     self.volume = volume
+    self.volume_number = volume_number
 
   def __repr__(self):
-    return "%s %s %s %s" % (self.action, self.target_id, self.target_name, self.volume)
+    return "%s %s %s %s %s" % (self.action, self.target_id, self.target_name, self.volume, self.volume_number)
 
 
 class Offset(object):
@@ -60,10 +62,12 @@ class Analyzer(object):
       recommended_pos_rate = strategy_obj.getRecommendedPos(pos, current_price)
       print('%s %s pos_rate=%f, pos_v_rate=%f, max_pos_rate=%f, recommended_pos_rate=%f' % (pos.id, pos.name, pos_rate, pos_v_rate, max_pos_rate, recommended_pos_rate))
       if pos_v_rate < recommended_pos_rate:
-        action = Action(ActionType.BUY, pos.id, pos.name, min(recommended_pos_rate - pos_rate, max_pos_rate - pos_v_rate) * wealth)
+        volume = min(recommended_pos_rate - pos_rate, max_pos_rate - pos_v_rate) * wealth
+        action = Action(ActionType.BUY, pos.id, pos.name, volume, math.floor(volume / current_price))
         actions.append(action)
       elif pos_rate > max_pos_rate:
-        action = Action(ActionType.SELL, pos.id, pos.name, (pos_rate - max_pos_rate) * wealth)
+        volume = (pos_rate - max_pos_rate) * wealth
+        action = Action(ActionType.SELL, pos.id, pos.name, volume, math.floor(volume / current_price))
         actions.append(action)
 
     return self.checkAction(actions)
@@ -103,7 +107,9 @@ class Analyzer(object):
     tro_buy_actions = []
     ud_buy_actions = []
     for action in action_list:
-      if action.volume < 100 * self._stock_price_dict[action.target_id].current:
+      if action.action == ActionType.BUY and action.volume < 100 * self._stock_price_dict[action.target_id].current:
+        continue
+      elif action.action == ActionType.BUY and action.target_id.startswith('sh688') and action.volume < 200 * self._stock_price_dict[action.target_id].current:
         continue
       else:
         checked_actions.append(action)

@@ -11,9 +11,9 @@ class Strategy(object):
     elif stock_pos.level == StockLevel.NML:
       return 0.15
     elif stock_pos.level == StockLevel.TRO:
-      return 0.05
+      return 0.02
     elif stock_pos.level == StockLevel.UD:
-      return 0.05
+      return 0.02
 
   def getMaxPos(self, stock_pos):
     return self.getWeight(stock_pos)
@@ -24,10 +24,10 @@ class Strategy(object):
       if stock_pos.rv == 0:
         return 0
       else:
-        if current_price > 1.05 * stock_pos.rv:
+        if current_price > 1 * stock_pos.rv:
           return 0
         else:
-          return min(0.025 * (1 + round(((1.05 * stock_pos.rv - current_price) / stock_pos.rv) * 20)), 0.15)
+          return min(0.025 * (1 + round(((1 * stock_pos.rv - current_price) / stock_pos.rv) * 20)), 0.15)
     elif stock_pos.level == StockLevel.TRO or stock_pos.level == StockLevel.UD:
       if stock_pos.rv == 0:
         return 0
@@ -35,4 +35,4 @@ class Strategy(object):
         if current_price > stock_pos.rv:
           return 0
         else:
-          return min(0.01 * (1 + round(((stock_pos.rv - current_price) / stock_pos.rv) * 20)), 0.05)
+          return min(0.005 * (1 + round(((stock_pos.rv - current_price) / stock_pos.rv) * 20)), 0.02)

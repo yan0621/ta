@@ -1,0 +1,2 @@
+export FLASK_APP=st_assistant
+export FLASK_ENV=development

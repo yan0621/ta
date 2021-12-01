@@ -23,19 +23,20 @@ class SinaStockPriceLoader(StockPriceLoader):
   def load(self, stock_ids: list):
     url = '%s%s' % (self.SERVICE_URL, ','.join(stock_ids))
     with urllib.request.urlopen(url) as f:
-      response = f.read().decode('gb2312')
+      response = f.read().decode('gbk')
       print(response)
       return self.loadFromData(response)
 
   def loadToFile(self, stock_ids: list):
     url = '%s%s' % (self.SERVICE_URL, ','.join(stock_ids))
     with urllib.request.urlopen(url) as f:
-      response = f.read().decode('gb2312')
+      response = f.read().decode('gbk')
       with open(self.PRICE_FILE, 'r+') as f:
+        print(response)
         f.write(response)
 
   def loadFromDataFile(self):
-    with open(self.PRICE_FILE) as f:
+    with open(self.PRICE_FILE, encoding='utf-8') as f:
       return self.loadFromData(f.read())
 
   def loadFromData(self, stock_price_data):
