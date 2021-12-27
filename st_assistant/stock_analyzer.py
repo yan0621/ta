@@ -107,9 +107,9 @@ class Analyzer(object):
     tro_buy_actions = []
     ud_buy_actions = []
     for action in action_list:
-      if action.action == ActionType.BUY and action.volume < 100 * self._stock_price_dict[action.target_id].current:
+      if action.volume < 100 * self._stock_price_dict[action.target_id].current:
         continue
-      elif action.action == ActionType.BUY and action.target_id.startswith('sh688') and action.volume < 200 * self._stock_price_dict[action.target_id].current:
+      elif action.target_id.startswith('sh688') and action.volume < 200 * self._stock_price_dict[action.target_id].current:
         continue
       else:
         checked_actions.append(action)
