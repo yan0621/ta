@@ -1,10 +1,10 @@
 import enum
 
 class StockLevel(enum.Enum):
-  LONG = 1
-  NML = 2
-  TRO = 3
-  UD = 4
+  LUO = 1
+  LUR = 2
+  LDR = 3
+  MUR = 4
 
 class StockPos(object):
 
